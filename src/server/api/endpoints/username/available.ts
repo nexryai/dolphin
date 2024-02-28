@@ -1,29 +1,29 @@
-import $ from 'cafy';
-import define from '../../define';
-import { Users, UsedUsernames } from '../../../../models';
+import $ from "cafy";
+import define from "../../define";
+import { Users, UsedUsernames } from "../../../../models";
 
 export const meta = {
-	tags: ['users'],
+    tags: ["users"],
 
-	requireCredential: false,
+    requireCredential: false,
 
-	params: {
-		username: {
-			validator: $.use(Users.validateLocalUsername)
-		}
-	}
+    params: {
+        username: {
+            validator: $.use(Users.validateLocalUsername)
+        }
+    }
 };
 
 export default define(meta, async (ps) => {
-	// Get exist
-	const exist = await Users.count({
-		host: null,
-		usernameLower: ps.username.toLowerCase()
-	});
+    // Get exist
+    const exist = await Users.count({
+        host: null,
+        usernameLower: ps.username.toLowerCase()
+    });
 
-	const exist2 = await UsedUsernames.count({ username: ps.username.toLowerCase() });
+    const exist2 = await UsedUsernames.count({ username: ps.username.toLowerCase() });
 
-	return {
-		available: exist === 0 && exist2 === 0
-	};
+    return {
+        available: exist === 0 && exist2 === 0
+    };
 });

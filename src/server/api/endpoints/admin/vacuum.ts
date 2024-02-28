@@ -1,33 +1,33 @@
-import $ from 'cafy';
-import define from '../../define';
-import { getConnection } from 'typeorm';
+import $ from "cafy";
+import define from "../../define";
+import { getConnection } from "typeorm";
 
 export const meta = {
-	tags: ['admin'],
+    tags: ["admin"],
 
-	requireCredential: true,
-	requireModerator: true,
+    requireCredential: true,
+    requireModerator: true,
 
-	params: {
-		full: {
-			validator: $.bool,
-		},
-		analyze: {
-			validator: $.bool,
-		},
-	}
+    params: {
+        full: {
+            validator: $.bool,
+        },
+        analyze: {
+            validator: $.bool,
+        },
+    }
 };
 
 export default define(meta, async (ps, me) => {
-	const params: string[] = [];
+    const params: string[] = [];
 
-	if (ps.full) {
-		params.push('FULL');
-	}
+    if (ps.full) {
+        params.push("FULL");
+    }
 
-	if (ps.analyze) {
-		params.push('ANALYZE');
-	}
+    if (ps.analyze) {
+        params.push("ANALYZE");
+    }
 
-	getConnection().query('VACUUM ' + params.join(' '));
+    getConnection().query("VACUUM " + params.join(" "));
 });

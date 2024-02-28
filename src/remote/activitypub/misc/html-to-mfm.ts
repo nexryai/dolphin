@@ -1,9 +1,9 @@
-import { IObject } from '../type';
-import { extractApHashtagObjects } from '../models/tag';
-import { fromHtml } from '../../../mfm/fromHtml';
+import { IObject } from "../type";
+import { extractApHashtagObjects } from "../models/tag";
+import { fromHtml } from "../../../mfm/fromHtml";
 
 export function htmlToMfm(html: string, tag?: IObject | IObject[]) {
-	const hashtagNames = extractApHashtagObjects(tag).map(x => x.name).filter((x): x is string => x != null);
+    const hashtagNames = extractApHashtagObjects(tag).map(x => x.name).filter((x): x is string => x != null);
 
-	return fromHtml(html, hashtagNames);
+    return fromHtml(html, hashtagNames);
 }

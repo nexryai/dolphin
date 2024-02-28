@@ -1,32 +1,32 @@
-import define from '../define';
-import { Users } from '../../../models';
+import define from "../define";
+import { Users } from "../../../models";
 
 export const meta = {
-	stability: 'stable',
+    stability: "stable",
 
-	desc: {
-		'ja-JP': '自分のアカウント情報を取得します。'
-	},
+    desc: {
+        "ja-JP": "自分のアカウント情報を取得します。"
+    },
 
-	tags: ['account'],
+    tags: ["account"],
 
-	requireCredential: true,
+    requireCredential: true,
 
-	params: {},
+    params: {},
 
-	res: {
-		type: 'object' as const,
-		optional: false as const, nullable: false as const,
-		ref: 'User',
-	},
+    res: {
+        type: "object" as const,
+        optional: false as const, nullable: false as const,
+        ref: "User",
+    },
 };
 
 export default define(meta, async (ps, user, app) => {
-	const isSecure = user != null && app == null;
+    const isSecure = user != null && app == null;
 
-	return await Users.pack(user, user, {
-		detail: true,
-		includeHasUnreadNotes: true,
-		includeSecrets: isSecure
-	});
+    return await Users.pack(user, user, {
+        detail: true,
+        includeHasUnreadNotes: true,
+        includeSecrets: isSecure
+    });
 });

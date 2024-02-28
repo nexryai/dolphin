@@ -1,16 +1,16 @@
-import { Notes } from '../../../../models';
-import { IRemoteUser } from '../../../../models/entities/user';
-import { IAnnounce, getApId } from '../../type';
-import deleteNote from '../../../../services/note/delete';
+import { Notes } from "../../../../models";
+import { IRemoteUser } from "../../../../models/entities/user";
+import { IAnnounce, getApId } from "../../type";
+import deleteNote from "../../../../services/note/delete";
 
 export const undoAnnounce = async (actor: IRemoteUser, activity: IAnnounce): Promise<void> => {
-	const uri = getApId(activity);
+    const uri = getApId(activity);
 
-	const note = await Notes.findOne({
-		uri
-	});
+    const note = await Notes.findOne({
+        uri
+    });
 
-	if (!note) return;
+    if (!note) return;
 
-	await deleteNote(actor, note);
+    await deleteNote(actor, note);
 };

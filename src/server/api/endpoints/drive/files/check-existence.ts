@@ -1,39 +1,39 @@
-import $ from 'cafy';
-import define from '../../../define';
-import { DriveFiles } from '../../../../../models';
+import $ from "cafy";
+import define from "../../../define";
+import { DriveFiles } from "../../../../../models";
 
 export const meta = {
-	desc: {
-		'ja-JP': '与えられたMD5ハッシュ値を持つファイルがドライブに存在するかどうかを返します。',
-		'en-US': 'Returns whether the file with the given MD5 hash exists in the user\'s drive.'
-	},
+    desc: {
+        "ja-JP": "与えられたMD5ハッシュ値を持つファイルがドライブに存在するかどうかを返します。",
+        "en-US": "Returns whether the file with the given MD5 hash exists in the user's drive."
+    },
 
-	tags: ['drive'],
+    tags: ["drive"],
 
-	requireCredential: true,
+    requireCredential: true,
 
-	kind: 'read:drive',
+    kind: "read:drive",
 
-	params: {
-		md5: {
-			validator: $.str,
-			desc: {
-				'ja-JP': 'ファイルのMD5ハッシュ'
-			}
-		}
-	},
+    params: {
+        md5: {
+            validator: $.str,
+            desc: {
+                "ja-JP": "ファイルのMD5ハッシュ"
+            }
+        }
+    },
 
-	res: {
-		type: 'boolean' as const,
-		optional: false as const, nullable: false as const,
-	},
+    res: {
+        type: "boolean" as const,
+        optional: false as const, nullable: false as const,
+    },
 };
 
 export default define(meta, async (ps, user) => {
-	const file = await DriveFiles.findOne({
-		md5: ps.md5,
-		userId: user.id,
-	});
+    const file = await DriveFiles.findOne({
+        md5: ps.md5,
+        userId: user.id,
+    });
 
-	return file != null;
+    return file != null;
 });

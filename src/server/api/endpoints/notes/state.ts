@@ -1,43 +1,43 @@
-import $ from 'cafy';
-import { ID } from '../../../../misc/cafy-id';
-import define from '../../define';
-import { NoteFavorites } from '../../../../models';
+import $ from "cafy";
+import { ID } from "../../../../misc/cafy-id";
+import define from "../../define";
+import { NoteFavorites } from "../../../../models";
 
 export const meta = {
-	stability: 'stable',
+    stability: "stable",
 
-	desc: {
-		'ja-JP': '指定した投稿の状態を取得します。',
-		'en-US': 'Get state of a note.'
-	},
+    desc: {
+        "ja-JP": "指定した投稿の状態を取得します。",
+        "en-US": "Get state of a note."
+    },
 
-	tags: ['notes'],
+    tags: ["notes"],
 
-	requireCredential: true,
+    requireCredential: true,
 
-	params: {
-		noteId: {
-			validator: $.type(ID),
-			desc: {
-				'ja-JP': '対象の投稿のID',
-				'en-US': 'Target note ID.'
-			}
-		}
-	}
+    params: {
+        noteId: {
+            validator: $.type(ID),
+            desc: {
+                "ja-JP": "対象の投稿のID",
+                "en-US": "Target note ID."
+            }
+        }
+    }
 };
 
 export default define(meta, async (ps, user) => {
-	const [favorite] = await Promise.all([
-		NoteFavorites.count({
-			where: {
-			userId: user.id,
-			noteId: ps.noteId
-			},
-			take: 1
-		}),
-	]);
+    const [favorite] = await Promise.all([
+        NoteFavorites.count({
+            where: {
+                userId: user.id,
+                noteId: ps.noteId
+            },
+            take: 1
+        }),
+    ]);
 
-	return {
-		isFavorited: favorite !== 0,
-	};
+    return {
+        isFavorited: favorite !== 0,
+    };
 });
