@@ -1,4 +1,4 @@
-require('./bytes');
-require('./number');
-require('./user');
-require('./note');
+require("./bytes");
+require("./number");
+require("./user");
+require("./note");

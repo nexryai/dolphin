@@ -1,20 +1,20 @@
-import define from '../../../define';
-import { listRelay } from '../../../../../services/relay';
+import define from "../../../define";
+import { listRelay } from "../../../../../services/relay";
 
 export const meta = {
-	desc: {
-		'ja-JP': 'List relay'
-	},
+    desc: {
+        "ja-JP": "List relay"
+    },
 
-	tags: ['admin'],
+    tags: ["admin"],
 
-	requireCredential: true as const,
-	requireModerator: true as const,
+    requireCredential: true as const,
+    requireModerator: true as const,
 
-	params: {
-	},
+    params: {
+    },
 };
 
 export default define(meta, async (ps, user) => {
-	return await listRelay();
+    return await listRelay();
 });

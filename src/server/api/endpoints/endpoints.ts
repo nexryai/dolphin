@@ -1,15 +1,15 @@
-import define from '../define';
-import endpoints from '../endpoints';
+import define from "../define";
+import endpoints from "../endpoints";
 
 export const meta = {
-	requireCredential: false,
+    requireCredential: false,
 
-	tags: ['meta'],
+    tags: ["meta"],
 
-	params: {
-	},
+    params: {
+    },
 };
 
 export default define(meta, async () => {
-	return endpoints.map(x => x.name);
+    return endpoints.map(x => x.name);
 });

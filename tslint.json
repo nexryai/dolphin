@@ -8,7 +8,7 @@
 	"rules": {
 		"align": false,
 		"indent": [true, "tabs"],
-		"quotemark": [true, "single"],
+		"quotemark": [true, "double"],
 		"no-var-requires": false,
 		"no-string-throw": false,
 		"trailing-comma": [false],

@@ -1,27 +1,27 @@
-import $ from 'cafy';
-import define from '../../../define';
-import { deleteFile } from '../../../../../services/drive/delete-file';
-import { DriveFiles } from '../../../../../models';
+import $ from "cafy";
+import define from "../../../define";
+import { deleteFile } from "../../../../../services/drive/delete-file";
+import { DriveFiles } from "../../../../../models";
 
 export const meta = {
-	tags: ['admin'],
+    tags: ["admin"],
 
-	requireCredential: true,
-	requireModerator: true,
+    requireCredential: true,
+    requireModerator: true,
 
-	params: {
-		host: {
-			validator: $.str
-		}
-	}
+    params: {
+        host: {
+            validator: $.str
+        }
+    }
 };
 
 export default define(meta, async (ps, me) => {
-	const files = await DriveFiles.find({
-		userHost: ps.host
-	});
+    const files = await DriveFiles.find({
+        userHost: ps.host
+    });
 
-	for (const file of files) {
-		deleteFile(file);
-	}
+    for (const file of files) {
+        deleteFile(file);
+    }
 });
