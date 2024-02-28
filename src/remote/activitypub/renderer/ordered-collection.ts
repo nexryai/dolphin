@@ -7,15 +7,15 @@
  * @param orderedItems attached objects (optional)
  */
 export default function(id: string | null, totalItems: any, first?: string, last?: string, orderedItems?: object) {
-    const page: any = {
-        id,
-        type: "OrderedCollection",
-        totalItems,
-    };
+	const page: any = {
+		id,
+		type: 'OrderedCollection',
+		totalItems,
+	};
 
-    if (first) page.first = first;
-    if (last) page.last = last;
-    if (orderedItems) page.orderedItems = orderedItems;
+	if (first) page.first = first;
+	if (last) page.last = last;
+	if (orderedItems) page.orderedItems = orderedItems;
 
-    return page;
+	return page;
 }

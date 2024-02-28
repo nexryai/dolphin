@@ -1,17 +1,17 @@
-import { Entity, PrimaryColumn, Index, Column } from "typeorm";
-import { id } from "../id";
+import { Entity, PrimaryColumn, Index, Column } from 'typeorm';
+import { id } from '../id';
 
 @Entity()
 export class Instance {
 	@PrimaryColumn(id())
-    public id: string;
+	public id: string;
 
 	/**
 	 * このインスタンスを捕捉した日時
 	 */
 	@Index()
-	@Column("timestamp with time zone", {
-	    comment: "The registered date of the Instance."
+	@Column('timestamp with time zone', {
+		comment: 'The registered date of the Instance.'
 	})
 	public registeredAt: Date;
 
@@ -19,9 +19,9 @@ export class Instance {
 	 * ホスト
 	 */
 	@Index({ unique: true })
-	@Column("varchar", {
-	    length: 128,
-	    comment: "The host of the Instance."
+	@Column('varchar', {
+		length: 128,
+		comment: 'The host of the Instance.'
 	})
 	public host: string;
 
@@ -29,9 +29,9 @@ export class Instance {
 	 * インスタンスのユーザー数
 	 */
 	@Index()
-	@Column("integer", {
-	    default: 0,
-	    comment: "The count of the users of the Instance."
+	@Column('integer', {
+		default: 0,
+		comment: 'The count of the users of the Instance.'
 	})
 	public usersCount: number;
 
@@ -39,9 +39,9 @@ export class Instance {
 	 * インスタンスの投稿数
 	 */
 	@Index()
-	@Column("integer", {
-	    default: 0,
-	    comment: "The count of the notes of the Instance."
+	@Column('integer', {
+		default: 0,
+		comment: 'The count of the notes of the Instance.'
 	})
 	public notesCount: number;
 
@@ -49,8 +49,8 @@ export class Instance {
 	 * このインスタンスのユーザーからフォローされている、自インスタンスのユーザーの数
 	 */
 	@Index()
-	@Column("integer", {
-	    default: 0,
+	@Column('integer', {
+		default: 0,
 	})
 	public followingCount: number;
 
@@ -58,8 +58,8 @@ export class Instance {
 	 * このインスタンスのユーザーをフォローしている、自インスタンスのユーザーの数
 	 */
 	@Index()
-	@Column("integer", {
-	    default: 0,
+	@Column('integer', {
+		default: 0,
 	})
 	public followersCount: number;
 
@@ -67,8 +67,8 @@ export class Instance {
 	 * ドライブ使用量
 	 */
 	@Index()
-	@Column("bigint", {
-	    default: 0,
+	@Column('bigint', {
+		default: 0,
 	})
 	public driveUsage: number;
 
@@ -76,8 +76,8 @@ export class Instance {
 	 * ドライブのファイル数
 	 */
 	@Index()
-	@Column("integer", {
-	    default: 0,
+	@Column('integer', {
+		default: 0,
 	})
 	public driveFiles: number;
 
@@ -85,16 +85,16 @@ export class Instance {
 	 * 直近のリクエスト送信日時
 	 */
 	@Index()
-	@Column("timestamp with time zone", {
-	    nullable: true,
+	@Column('timestamp with time zone', {
+		nullable: true,
 	})
 	public latestRequestSentAt: Date | null;
 
 	/**
 	 * 直近のリクエスト送信時のHTTPステータスコード
 	 */
-	@Column("integer", {
-	    nullable: true,
+	@Column('integer', {
+		nullable: true,
 	})
 	public latestStatus: number | null;
 
@@ -102,8 +102,8 @@ export class Instance {
 	 * 直近のリクエスト受信日時
 	 */
 	@Index()
-	@Column("timestamp with time zone", {
-	    nullable: true,
+	@Column('timestamp with time zone', {
+		nullable: true,
 	})
 	public latestRequestReceivedAt: Date | null;
 
@@ -111,15 +111,15 @@ export class Instance {
 	 * このインスタンスと最後にやり取りした日時
 	 */
 	@Index()
-	@Column("timestamp with time zone")
+	@Column('timestamp with time zone')
 	public lastCommunicatedAt: Date;
 
 	/**
 	 * このインスタンスと不通かどうか
 	 */
 	@Index()
-	@Column("boolean", {
-	    default: false
+	@Column('boolean', {
+		default: false
 	})
 	public isNotResponding: boolean;
 
@@ -127,55 +127,55 @@ export class Instance {
 	 * このインスタンスへの配信を停止するか
 	 */
 	@Index()
-	@Column("boolean", {
-	    default: false
+	@Column('boolean', {
+		default: false
 	})
 	public isSuspended: boolean;
 
-	@Column("varchar", {
-	    length: 64, nullable: true, default: null,
-	    comment: "The software of the Instance."
+	@Column('varchar', {
+		length: 64, nullable: true, default: null,
+		comment: 'The software of the Instance.'
 	})
 	public softwareName: string | null;
 
-	@Column("varchar", {
-	    length: 64, nullable: true, default: null,
+	@Column('varchar', {
+		length: 64, nullable: true, default: null,
 	})
 	public softwareVersion: string | null;
 
-	@Column("boolean", {
-	    nullable: true, default: null,
+	@Column('boolean', {
+		nullable: true, default: null,
 	})
 	public openRegistrations: boolean | null;
 
-	@Column("jsonb", {
-	    nullable: true, default: null,
+	@Column('jsonb', {
+		nullable: true, default: null,
 	})
 	public metadata: Record<string, any> | null;
 
-	@Column("varchar", {
-	    length: 256, nullable: true, default: null,
+	@Column('varchar', {
+		length: 256, nullable: true, default: null,
 	})
 	public name: string | null;
 
-	@Column("varchar", {
-	    length: 4096, nullable: true, default: null,
+	@Column('varchar', {
+		length: 4096, nullable: true, default: null,
 	})
 	public description: string | null;
 
-	@Column("varchar", {
-	    length: 128, nullable: true, default: null,
+	@Column('varchar', {
+		length: 128, nullable: true, default: null,
 	})
 	public maintainerName: string | null;
 
-	@Column("varchar", {
-	    length: 256, nullable: true, default: null,
+	@Column('varchar', {
+		length: 256, nullable: true, default: null,
 	})
 	public maintainerEmail: string | null;
 
 	@Index()
-	@Column("timestamp with time zone", {
-	    nullable: true,
+	@Column('timestamp with time zone', {
+		nullable: true,
 	})
 	public infoUpdatedAt: Date | null;
 }

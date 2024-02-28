@@ -1,3 +1,3 @@
-import rndstr from "rndstr";
+import rndstr from 'rndstr';
 
-export default () => rndstr("a-zA-Z0-9", 16);
+export default () => rndstr('a-zA-Z0-9', 16);

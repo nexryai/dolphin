@@ -1,18 +1,18 @@
-import { User } from "../../models/entities/user";
-import { Users } from "../../models";
+import { User } from '../../models/entities/user';
+import { Users } from '../../models';
 
 export default async (token: string): Promise<User | null | undefined> => {
-    if (token == null) {
-        return null;
-    }
+	if (token == null) {
+		return null;
+	}
 
-    // Fetch user
-    const user = await Users
-        .findOne({ token });
+	// Fetch user
+	const user = await Users
+		.findOne({ token });
 
-    if (user == null) {
-        throw new Error("user not found");
-    }
+	if (user == null) {
+		throw new Error('user not found');
+	}
 
-    return user;
+	return user;
 };

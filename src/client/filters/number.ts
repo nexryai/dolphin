@@ -1,3 +1,3 @@
-import Vue from "vue";
+import Vue from 'vue';
 
-Vue.filter("number", n => n == null ? "N/A" : n.toLocaleString());
+Vue.filter('number', n => n == null ? 'N/A' : n.toLocaleString());

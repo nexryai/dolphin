@@ -1,13 +1,13 @@
-import define from "../../../define";
-import { createCleanRemoteFilesJob } from "../../../../../queue";
+import define from '../../../define';
+import { createCleanRemoteFilesJob } from '../../../../../queue';
 
 export const meta = {
-    tags: ["admin"],
+	tags: ['admin'],
 
-    requireCredential: true,
-    requireModerator: true,
+	requireCredential: true,
+	requireModerator: true,
 };
 
 export default define(meta, async (ps, me) => {
-    createCleanRemoteFilesJob();
+	createCleanRemoteFilesJob();
 });

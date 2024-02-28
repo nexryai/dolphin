@@ -1,4 +1,4 @@
-declare module "recaptcha-promise" {
+declare module 'recaptcha-promise' {
 	interface IVerifyOptions {
 		secret_key?: string;
 	}

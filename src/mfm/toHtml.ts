@@ -1,112 +1,112 @@
-import { JSDOM } from "jsdom";
-import config from "../config";
-import { intersperse } from "../prelude/array";
-import { MfmForest, MfmTree } from "./prelude";
-import { IMentionedRemoteUsers } from "../models/entities/note";
+import { JSDOM } from 'jsdom';
+import config from '../config';
+import { intersperse } from '../prelude/array';
+import { MfmForest, MfmTree } from './prelude';
+import { IMentionedRemoteUsers } from '../models/entities/note';
 
 export function toHtml(tokens: MfmForest | null, mentionedRemoteUsers: IMentionedRemoteUsers = []) {
-    if (tokens == null) {
-        return null;
-    }
+	if (tokens == null) {
+		return null;
+	}
 
-    const { window } = new JSDOM("");
+	const { window } = new JSDOM('');
 
-    const doc = window.document;
+	const doc = window.document;
 
-    function appendChildren(children: MfmForest, targetElement: any): void {
-        for (const child of children.map(t => handlers[t.node.type](t))) targetElement.appendChild(child);
-    }
+	function appendChildren(children: MfmForest, targetElement: any): void {
+		for (const child of children.map(t => handlers[t.node.type](t))) targetElement.appendChild(child);
+	}
 
-    const handlers: { [key: string]: (token: MfmTree) => any } = {
-        bold(token) {
-            const el = doc.createElement("b");
-            appendChildren(token.children, el);
-            return el;
-        },
+	const handlers: { [key: string]: (token: MfmTree) => any } = {
+		bold(token) {
+			const el = doc.createElement('b');
+			appendChildren(token.children, el);
+			return el;
+		},
 
-        small(token) {
-            const el = doc.createElement("small");
-            appendChildren(token.children, el);
-            return el;
-        },
+		small(token) {
+			const el = doc.createElement('small');
+			appendChildren(token.children, el);
+			return el;
+		},
 
-        strike(token) {
-            const el = doc.createElement("del");
-            appendChildren(token.children, el);
-            return el;
-        },
+		strike(token) {
+			const el = doc.createElement('del');
+			appendChildren(token.children, el);
+			return el;
+		},
 
-        italic(token) {
-            const el = doc.createElement("i");
-            appendChildren(token.children, el);
-            return el;
-        },
+		italic(token) {
+			const el = doc.createElement('i');
+			appendChildren(token.children, el);
+			return el;
+		},
 
-        emoji(token) {
-            return doc.createTextNode(token.node.props.emoji ? token.node.props.emoji : `:${token.node.props.name}:`);
-        },
+		emoji(token) {
+			return doc.createTextNode(token.node.props.emoji ? token.node.props.emoji : `:${token.node.props.name}:`);
+		},
 
-        hashtag(token) {
-            const a = doc.createElement("a");
-            a.href = `${config.url}/tags/${token.node.props.hashtag}`;
-            a.textContent = `#${token.node.props.hashtag}`;
-            a.setAttribute("rel", "tag");
-            return a;
-        },
+		hashtag(token) {
+			const a = doc.createElement('a');
+			a.href = `${config.url}/tags/${token.node.props.hashtag}`;
+			a.textContent = `#${token.node.props.hashtag}`;
+			a.setAttribute('rel', 'tag');
+			return a;
+		},
 
-        link(token) {
-            const a = doc.createElement("a");
-            a.href = token.node.props.url;
-            appendChildren(token.children, a);
-            return a;
-        },
+		link(token) {
+			const a = doc.createElement('a');
+			a.href = token.node.props.url;
+			appendChildren(token.children, a);
+			return a;
+		},
 
-        mention(token) {
-            const a = doc.createElement("a");
-            const { username, host, acct } = token.node.props;
-            switch (host) {
-            case "github.com":
-                a.href = `https://github.com/${username}`;
-                break;
-            case "twitter.com":
-                a.href = `https://twitter.com/${username}`;
-                break;
-            default:
-                const remoteUserInfo = mentionedRemoteUsers.find(remoteUser => remoteUser.username === username && remoteUser.host === host);
-                a.href = remoteUserInfo ? (remoteUserInfo.url ? remoteUserInfo.url : remoteUserInfo.uri) : `${config.url}/${acct}`;
-                a.className = "u-url mention";
-                break;
-            }
-            a.textContent = acct;
-            return a;
-        },
+		mention(token) {
+			const a = doc.createElement('a');
+			const { username, host, acct } = token.node.props;
+			switch (host) {
+				case 'github.com':
+					a.href = `https://github.com/${username}`;
+					break;
+				case 'twitter.com':
+					a.href = `https://twitter.com/${username}`;
+					break;
+				default:
+					const remoteUserInfo = mentionedRemoteUsers.find(remoteUser => remoteUser.username === username && remoteUser.host === host);
+					a.href = remoteUserInfo ? (remoteUserInfo.url ? remoteUserInfo.url : remoteUserInfo.uri) : `${config.url}/${acct}`;
+					a.className = 'u-url mention';
+					break;
+			}
+			a.textContent = acct;
+			return a;
+		},
 
-        quote(token) {
-            const el = doc.createElement("blockquote");
-            appendChildren(token.children, el);
-            return el;
-        },
+		quote(token) {
+			const el = doc.createElement('blockquote');
+			appendChildren(token.children, el);
+			return el;
+		},
 
-        text(token) {
-            const el = doc.createElement("span");
-            const nodes = (token.node.props.text as string).split(/\r\n|\r|\n/).map(x => doc.createTextNode(x) as Node);
+		text(token) {
+			const el = doc.createElement('span');
+			const nodes = (token.node.props.text as string).split(/\r\n|\r|\n/).map(x => doc.createTextNode(x) as Node);
 
-            for (const x of intersperse<Node | "br">("br", nodes)) {
-                el.appendChild(x === "br" ? doc.createElement("br") : x);
-            }
+			for (const x of intersperse<Node | 'br'>('br', nodes)) {
+				el.appendChild(x === 'br' ? doc.createElement('br') : x);
+			}
 
-            return el;
-        },
+			return el;
+		},
 
-        url(token) {
-            const a = doc.createElement("a");
-            a.href = token.node.props.url;
-            a.textContent = token.node.props.url;
-            return a;
-        },
-    };
+		url(token) {
+			const a = doc.createElement('a');
+			a.href = token.node.props.url;
+			a.textContent = token.node.props.url;
+			return a;
+		},
+	};
 
-    appendChildren(tokens, doc.body);
+	appendChildren(tokens, doc.body);
 
-    return `<p>${doc.body.innerHTML}</p>`;
+	return `<p>${doc.body.innerHTML}</p>`;
 }

@@ -1,5 +1,5 @@
-import Vue from "vue";
+import Vue from 'vue';
 
-Vue.filter("notePage", note => {
-    return `/notes/${note.id}`;
+Vue.filter('notePage', note => {
+	return `/notes/${note.id}`;
 });

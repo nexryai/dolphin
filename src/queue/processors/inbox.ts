@@ -1,129 +1,129 @@
-import * as Bull from "bull";
-import * as httpSignature from "@peertube/http-signature";
-import perform from "../../remote/activitypub/perform";
-import Logger from "../../services/logger";
-import { registerOrFetchInstanceDoc } from "../../services/register-or-fetch-instance-doc";
-import { Instances } from "../../models";
-import { instanceChart } from "../../services/chart";
-import { fetchMeta } from "../../misc/fetch-meta";
-import { toPuny, extractDbHost } from "../../misc/convert-host";
-import { getApId } from "../../remote/activitypub/type";
-import { fetchNodeinfo } from "../../services/fetch-nodeinfo";
-import { InboxJobData } from "..";
-import DbResolver from "../../remote/activitypub/db-resolver";
-import { resolvePerson } from "../../remote/activitypub/models/person";
-import { LdSignature } from "../../remote/activitypub/misc/ld-signature";
+import * as Bull from 'bull';
+import * as httpSignature from '@peertube/http-signature';
+import perform from '../../remote/activitypub/perform';
+import Logger from '../../services/logger';
+import { registerOrFetchInstanceDoc } from '../../services/register-or-fetch-instance-doc';
+import { Instances } from '../../models';
+import { instanceChart } from '../../services/chart';
+import { fetchMeta } from '../../misc/fetch-meta';
+import { toPuny, extractDbHost } from '../../misc/convert-host';
+import { getApId } from '../../remote/activitypub/type';
+import { fetchNodeinfo } from '../../services/fetch-nodeinfo';
+import { InboxJobData } from '..';
+import DbResolver from '../../remote/activitypub/db-resolver';
+import { resolvePerson } from '../../remote/activitypub/models/person';
+import { LdSignature } from '../../remote/activitypub/misc/ld-signature';
 
-const logger = new Logger("inbox");
+const logger = new Logger('inbox');
 
 // ユーザーのinboxにアクティビティが届いた時の処理
 export default async (job: Bull.Job<InboxJobData>): Promise<string> => {
-    const signature = job.data.signature;	// HTTP-signature
-    const activity = job.data.activity;
+	const signature = job.data.signature;	// HTTP-signature
+	const activity = job.data.activity;
 
-    //#region Log
-    const info = Object.assign({}, activity);
-    delete info["@context"];
-    logger.debug(JSON.stringify(info, null, 2));
-    //#endregion
+	//#region Log
+	const info = Object.assign({}, activity);
+	delete info['@context'];
+	logger.debug(JSON.stringify(info, null, 2));
+	//#endregion
 
-    const host = toPuny(new URL(signature.keyId).hostname);
+	const host = toPuny(new URL(signature.keyId).hostname);
 
-    // ブロックしてたら中断
-    const meta = await fetchMeta();
-    if (meta.blockedHosts.includes(host)) {
-        return `Blocked request: ${host}`;
-    }
+	// ブロックしてたら中断
+	const meta = await fetchMeta();
+	if (meta.blockedHosts.includes(host)) {
+		return `Blocked request: ${host}`;
+	}
 
-    const keyIdLower = signature.keyId.toLowerCase();
-    if (keyIdLower.startsWith("acct:")) {
-        return `Old keyId is no longer supported. ${keyIdLower}`;
-    }
+	const keyIdLower = signature.keyId.toLowerCase();
+	if (keyIdLower.startsWith('acct:')) {
+		return `Old keyId is no longer supported. ${keyIdLower}`;
+	}
 
-    const dbResolver = new DbResolver();
+	const dbResolver = new DbResolver();
 
-    // HTTP-Signature keyIdを元にDBから取得
-    let authUser = await dbResolver.getAuthUserFromKeyId(signature.keyId);
+	// HTTP-Signature keyIdを元にDBから取得
+	let authUser = await dbResolver.getAuthUserFromKeyId(signature.keyId);
 
-    // keyIdでわからなければ、activity.actorを元にDBから取得 || activity.actorを元にリモートから取得
-    if (authUser == null) {
-        authUser = await dbResolver.getAuthUserFromApId(getApId(activity.actor));
-    }
+	// keyIdでわからなければ、activity.actorを元にDBから取得 || activity.actorを元にリモートから取得
+	if (authUser == null) {
+		authUser = await dbResolver.getAuthUserFromApId(getApId(activity.actor));
+	}
 
-    // それでもわからなければ終了
-    if (authUser == null) {
-        return "skip: failed to resolve user";
-    }
+	// それでもわからなければ終了
+	if (authUser == null) {
+		return `skip: failed to resolve user`;
+	}
 
-    // HTTP-Signatureの検証
-    const httpSignatureValidated = httpSignature.verifySignature(signature, authUser.key.keyPem);
+	// HTTP-Signatureの検証
+	const httpSignatureValidated = httpSignature.verifySignature(signature, authUser.key.keyPem);
 
-    // また、signatureのsignerは、activity.actorと一致する必要がある
-    if (!httpSignatureValidated || authUser.user.uri !== activity.actor) {
-        // 一致しなくても、でもLD-Signatureがありそうならそっちも見る
-        if (activity.signature) {
-            if (activity.signature.type !== "RsaSignature2017") {
-                return `skip: unsupported LD-signature type ${activity.signature.type}`;
-            }
+	// また、signatureのsignerは、activity.actorと一致する必要がある
+	if (!httpSignatureValidated || authUser.user.uri !== activity.actor) {
+		// 一致しなくても、でもLD-Signatureがありそうならそっちも見る
+		if (activity.signature) {
+			if (activity.signature.type !== 'RsaSignature2017') {
+				return `skip: unsupported LD-signature type ${activity.signature.type}`;
+			}
 
-            // activity.signature.creator: https://example.oom/users/user#main-key
-            // みたいになっててUserを引っ張れば公開キーも入ることを期待する
-            if (activity.signature.creator) {
-                const candicate = activity.signature.creator.replace(/#.*/, "");
-                await resolvePerson(candicate).catch(() => null);
-            }
+			// activity.signature.creator: https://example.oom/users/user#main-key
+			// みたいになっててUserを引っ張れば公開キーも入ることを期待する
+			if (activity.signature.creator) {
+				const candicate = activity.signature.creator.replace(/#.*/, '');
+				await resolvePerson(candicate).catch(() => null);
+			}
 
-            // keyIdからLD-Signatureのユーザーを取得
-            authUser = await dbResolver.getAuthUserFromKeyId(activity.signature.creator);
-            if (authUser == null) {
-                return "skip: LD-Signatureのユーザーが取得できませんでした";
-            }
+			// keyIdからLD-Signatureのユーザーを取得
+			authUser = await dbResolver.getAuthUserFromKeyId(activity.signature.creator);
+			if (authUser == null) {
+				return `skip: LD-Signatureのユーザーが取得できませんでした`;
+			}
 
-            // LD-Signature検証
-            const ldSignature = new LdSignature();
-            const verified = await ldSignature.verifyRsaSignature2017(activity, authUser.key.keyPem).catch(() => false);
-            if (!verified) {
-                return "skip: LD-Signatureの検証に失敗しました";
-            }
+			// LD-Signature検証
+			const ldSignature = new LdSignature();
+			const verified = await ldSignature.verifyRsaSignature2017(activity, authUser.key.keyPem).catch(() => false);
+			if (!verified) {
+				return `skip: LD-Signatureの検証に失敗しました`;
+			}
 
-            // もう一度actorチェック
-            if (authUser.user.uri !== activity.actor) {
-                return `skip: LD-Signature user(${authUser.user.uri}) !== activity.actor(${activity.actor})`;
-            }
+			// もう一度actorチェック
+			if (authUser.user.uri !== activity.actor) {
+				return `skip: LD-Signature user(${authUser.user.uri}) !== activity.actor(${activity.actor})`;
+			}
 
-            // ブロックしてたら中断
-            const ldHost = extractDbHost(authUser.user.uri);
-            if (meta.blockedHosts.includes(ldHost)) {
-                return `Blocked request: ${ldHost}`;
-            }
-        } else {
-            return `skip: http-signature verification failed and no LD-Signature. keyId=${signature.keyId}`;
-        }
-    }
+			// ブロックしてたら中断
+			const ldHost = extractDbHost(authUser.user.uri);
+			if (meta.blockedHosts.includes(ldHost)) {
+				return `Blocked request: ${ldHost}`;
+			}
+		} else {
+			return `skip: http-signature verification failed and no LD-Signature. keyId=${signature.keyId}`;
+		}
+	}
 
-    // activity.idがあればホストが署名者のホストであることを確認する
-    if (typeof activity.id === "string") {
-        const signerHost = extractDbHost(authUser.user.uri!);
-        const activityIdHost = extractDbHost(activity.id);
-        if (signerHost !== activityIdHost) {
-            return `skip: signerHost(${signerHost}) !== activity.id host(${activityIdHost}`;
-        }
-    }
+	// activity.idがあればホストが署名者のホストであることを確認する
+	if (typeof activity.id === 'string') {
+		const signerHost = extractDbHost(authUser.user.uri!);
+		const activityIdHost = extractDbHost(activity.id);
+		if (signerHost !== activityIdHost) {
+			return `skip: signerHost(${signerHost}) !== activity.id host(${activityIdHost}`;
+		}
+	}
 
-    // Update stats
-    registerOrFetchInstanceDoc(host).then(i => {
-        Instances.update(i.id, {
-            latestRequestReceivedAt: new Date(),
-            lastCommunicatedAt: new Date(),
-            isNotResponding: false
-        });
+	// Update stats
+	registerOrFetchInstanceDoc(host).then(i => {
+		Instances.update(i.id, {
+			latestRequestReceivedAt: new Date(),
+			lastCommunicatedAt: new Date(),
+			isNotResponding: false
+		});
 
-        fetchNodeinfo(i);
+		fetchNodeinfo(i);
 
-        instanceChart.requestReceived(i.host);
-    });
+		instanceChart.requestReceived(i.host);
+	});
 
-    // アクティビティを処理
-    await perform(authUser.user, activity);
-    return "ok";
+	// アクティビティを処理
+	await perform(authUser.user, activity);
+	return `ok`;
 };

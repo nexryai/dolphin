@@ -1,4 +1,4 @@
-declare module "langmap" {
+declare module 'langmap' {
 	type Lang = {
 		nativeName: string;
 		englishName: string;

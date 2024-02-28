@@ -1,31 +1,31 @@
-import define from "../../../define";
-import { deliverQueue } from "../../../../../queue";
+import define from '../../../define';
+import { deliverQueue } from '../../../../../queue';
 
 export const meta = {
-    tags: ["admin"],
+	tags: ['admin'],
 
-    requireCredential: true,
-    requireModerator: true,
+	requireCredential: true,
+	requireModerator: true,
 
-    params: {
-    }
+	params: {
+	}
 };
 
 export default define(meta, async (ps) => {
-    const jobs = await deliverQueue.getJobs(["delayed"]);
+	const jobs = await deliverQueue.getJobs(['delayed']);
 
-    const res = [] as [string, number][];
+	const res = [] as [string, number][];
 
-    for (const job of jobs) {
-        const host = new URL(job.data.to).host;
-        if (res.find(x => x[0] === host)) {
+	for (const job of jobs) {
+		const host = new URL(job.data.to).host;
+		if (res.find(x => x[0] === host)) {
 			res.find(x => x[0] === host)![1]++;
-        } else {
-            res.push([host, 1]);
-        }
-    }
+		} else {
+			res.push([host, 1]);
+		}
+	}
 
-    res.sort((a, b) => b[1] - a[1]);
+	res.sort((a, b) => b[1] - a[1]);
 
-    return res;
+	return res;
 });

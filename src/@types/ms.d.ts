@@ -1,4 +1,4 @@
-declare module "ms" {
+declare module 'ms' {
 	interface IMSOptions {
 		long: boolean;
 	}

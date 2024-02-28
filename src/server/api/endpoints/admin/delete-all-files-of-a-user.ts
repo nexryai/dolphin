@@ -1,32 +1,32 @@
-import $ from "cafy";
-import define from "../../define";
-import { deleteFile } from "../../../../services/drive/delete-file";
-import { DriveFiles } from "../../../../models";
-import { ID } from "../../../../misc/cafy-id";
+import $ from 'cafy';
+import define from '../../define';
+import { deleteFile } from '../../../../services/drive/delete-file';
+import { DriveFiles } from '../../../../models';
+import { ID } from '../../../../misc/cafy-id';
 
 export const meta = {
-    tags: ["admin"],
+	tags: ['admin'],
 
-    requireCredential: true,
-    requireModerator: true,
+	requireCredential: true,
+	requireModerator: true,
 
-    params: {
-        userId: {
-            validator: $.type(ID),
-            desc: {
-                "ja-JP": "対象のユーザーID",
-                "en-US": "The user ID which you want to suspend"
-            }
-        },
-    }
+	params: {
+		userId: {
+			validator: $.type(ID),
+			desc: {
+				'ja-JP': '対象のユーザーID',
+				'en-US': 'The user ID which you want to suspend'
+			}
+		},
+	}
 };
 
 export default define(meta, async (ps, me) => {
-    const files = await DriveFiles.find({
-        userId: ps.userId
-    });
+	const files = await DriveFiles.find({
+		userId: ps.userId
+	});
 
-    for (const file of files) {
-        deleteFile(file);
-    }
+	for (const file of files) {
+		deleteFile(file);
+	}
 });

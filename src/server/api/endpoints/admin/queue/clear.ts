@@ -1,15 +1,15 @@
-import define from "../../../define";
-import { destroy } from "../../../../../queue";
+import define from '../../../define';
+import { destroy } from '../../../../../queue';
 
 export const meta = {
-    tags: ["admin"],
+	tags: ['admin'],
 
-    requireCredential: true,
-    requireModerator: true,
+	requireCredential: true,
+	requireModerator: true,
 
-    params: {}
+	params: {}
 };
 
 export default define(meta, async (ps, me) => {
-    destroy();
+	destroy();
 });

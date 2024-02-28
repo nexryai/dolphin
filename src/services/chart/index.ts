@@ -1,13 +1,13 @@
-import FederationChart from "./charts/classes/federation";
-import NotesChart from "./charts/classes/notes";
-import UsersChart from "./charts/classes/users";
-import InstanceChart from "./charts/classes/instance";
-import PerUserNotesChart from "./charts/classes/per-user-notes";
-import DriveChart from "./charts/classes/drive";
-import PerUserReactionsChart from "./charts/classes/per-user-reactions";
-import HashtagChart from "./charts/classes/hashtag";
-import PerUserFollowingChart from "./charts/classes/per-user-following";
-import PerUserDriveChart from "./charts/classes/per-user-drive";
+import FederationChart from './charts/classes/federation';
+import NotesChart from './charts/classes/notes';
+import UsersChart from './charts/classes/users';
+import InstanceChart from './charts/classes/instance';
+import PerUserNotesChart from './charts/classes/per-user-notes';
+import DriveChart from './charts/classes/drive';
+import PerUserReactionsChart from './charts/classes/per-user-reactions';
+import HashtagChart from './charts/classes/hashtag';
+import PerUserFollowingChart from './charts/classes/per-user-following';
+import PerUserDriveChart from './charts/classes/per-user-drive';
 
 export const federationChart = new FederationChart();
 export const notesChart = new NotesChart();
